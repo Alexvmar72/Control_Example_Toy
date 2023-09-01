@@ -1,7 +1,6 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-
 public class ToyStore {
     private Map<Integer, Toy> toysMap;
     private PriorityQueue<Integer> queue;
