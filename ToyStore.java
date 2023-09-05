@@ -1,62 +1,76 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
-public class ToyStore {
-    private Map<Integer, Toy> toysMap;
-    private PriorityQueue<Integer> queue;
+class ToyStore {
+    private List<Toy> toys = new ArrayList<>();
 
-    public ToyStore() {
-        toysMap = new HashMap<>();
-        queue = new PriorityQueue<>();
+    public void addToy(int id, String name, int amount, int frequency) {
+        Toy toy = new Toy(id, name, amount, frequency);
+        toys.add(toy);
     }
 
-    public void addToy(int id, String name, int frequency) {
-        Toy toy = new Toy(id, name, frequency);
-        toysMap.put(id, toy);
-        for (int i = 0; i < frequency; i++) {
-            queue.add(id);
+    public void updateToyFrequency(int id, int newFrequency) {
+        for (Toy toy : toys) {
+            if (toy.getId() == id) {
+                toy.setFrequency(newFrequency);
+                break;
+            }
         }
     }
 
-    public int getToy() {
-        int randomNum = new Random().nextInt(100) + 1;
-        if (randomNum <= 20) {
-            return 1;
-        } else if (randomNum <= 40) {
-            return 2;
-        } else {
-            return queue.poll();
+    public Toy drawToy() {
+        double totalFrequency = toys.stream().mapToDouble(Toy::getFrequency).sum();
+        double randomValue = Math.random() * totalFrequency;
+        double frequencySum = 0;
+
+        for (Toy toy : toys) {
+            frequencySum += toy.getFrequency();
+            if (randomValue <= frequencySum) {
+                Toy prizeToy = new Toy(toy.getId(), toy.getName(), 1, (int) toy.getFrequency());
+                toy.setFrequency(toy.getAmount() - 1);
+                return prizeToy;
+            }
         }
+
+        return null;
     }
 
-    public void executeAndGetResults() {
-        StringBuilder results = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
-            int toyId = getToy();
-            results.append(toyId).append(" ");
-        }
-        writeResultsToFile(results.toString());
-    }
-
-    private void writeResultsToFile(String results) {
-        try {
-            FileWriter writer = new FileWriter("results.txt");
-            writer.write(results);
-            writer.close();
+    public void savePrizeToyToFile(Toy prizeToy) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("results.txt", true))) {
+            writer.println("ID: " + prizeToy.getId() + ", Name: " + prizeToy.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    }
 
-    private static class Toy {
-        private int id;
-        private String name;
-        private int frequency;
+class Toy {
+    private int id;
+    private String name;
+    private int amount;
+    private int frequency;
 
-        public Toy(int id, String name, int frequency) {
-            this.id = id;
-            this.name = name;
-            this.frequency = frequency;
-        }
+    public Toy(int id, String name, int amount, int frequency) {
+        this.id = id;
+        this.name = name;
+        this.amount = amount;
+        this.frequency = frequency;
+    }
+    public int getId() {
+        return id;
+    }
+    public String getName() {
+        return name;
+    }
+    public int getAmount() {
+        return amount;
+    }
+    public double getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
     }
 }
