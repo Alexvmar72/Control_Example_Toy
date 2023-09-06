@@ -7,8 +7,7 @@ class ToyStore {
 
     public void addToy(int id, String name, int amount, int frequency) {
         Toy toy = new Toy(id, name, amount, frequency);
-        toys.add(toy);
-    }
+        toys.add(toy);    }
 
     public void updateToyFrequency(int id, int newFrequency) {
         for (Toy toy : toys) {
@@ -18,7 +17,6 @@ class ToyStore {
             }
         }
     }
-
     public Toy drawToy() {
         double totalFrequency = toys.stream().mapToDouble(Toy::getFrequency).sum();
         double randomValue = Math.random() * totalFrequency;
@@ -35,7 +33,6 @@ class ToyStore {
 
         return null;
     }
-
     public void savePrizeToyToFile(Toy prizeToy) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("results.txt", true))) {
             writer.println("ID: " + prizeToy.getId() + ", Name: " + prizeToy.getName());
@@ -43,8 +40,7 @@ class ToyStore {
             e.printStackTrace();
         }
     }
-    }
-
+}
 class Toy {
     private int id;
     private String name;
